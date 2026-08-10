@@ -36,6 +36,7 @@ Two separate n8n workflows, staggered to avoid race conditions:
 | Delivery | Gmail (OAuth) |
 
 ## Repo structure
+Two separate n8n workflows...
 ├── workflows/
 │ ├── Finance_RAG_Ingestion.json
 │ └── Finance_RAG_Agent.json
