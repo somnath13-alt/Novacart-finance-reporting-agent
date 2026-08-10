@@ -1,0 +1,465 @@
+{
+  "name": "Finance_RAG_Ingestion",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "10WIS5uEN5ESPh9tjwMhWzeQFyCropY4c",
+            "mode": "list",
+            "cachedResultName": "NovaCart Internal Resources",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/10WIS5uEN5ESPh9tjwMhWzeQFyCropY4c"
+          }
+        },
+        "options": {
+          "fields": [
+            "*"
+          ]
+        }
+      },
+      "id": "45df8966-f11b-4bd6-ae28-34bc9c780829",
+      "name": "Search files and folders",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        224,
+        272
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "AmNEN3Tl7wRl2Xof",
+          "name": "Google Drive account 7"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "ea20cb0b-1baa-45a3-8e97-5a8cfd3ba79a",
+      "name": "Download file",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        448,
+        272
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "AmNEN3Tl7wRl2Xof",
+          "name": "Google Drive account 7"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chunkSize": 500,
+        "chunkOverlap": 50,
+        "options": {}
+      },
+      "id": "4a3c9c95-a9a7-4a41-92b5-713fb53a880d",
+      "name": "Recursive Character Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        912,
+        688
+      ]
+    },
+    {
+      "parameters": {
+        "chunkSize": 500,
+        "chunkOverlap": 50,
+        "options": {}
+      },
+      "id": "91fe54cd-c18e-4a70-867b-52f6fa7feabe",
+      "name": "Recursive Character Text Splitter1",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        896,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "source",
+                "value": "external"
+              }
+            ]
+          }
+        }
+      },
+      "id": "8a80b6c8-9054-44c2-a7a6-816c1116bb89",
+      "name": "Default Data Loader External",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        544,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "source",
+                "value": "internal"
+              }
+            ]
+          }
+        }
+      },
+      "id": "8e3e86d5-f929-4f57-a27f-ce105374748e",
+      "name": "Default Data Loader Internal",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        912,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1W8X-pvNPBs6B3XqKRfIGaEQRdmNlCcoZ",
+            "mode": "list",
+            "cachedResultName": "NovaCart External Resources",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1W8X-pvNPBs6B3XqKRfIGaEQRdmNlCcoZ"
+          }
+        },
+        "options": {
+          "fields": [
+            "*"
+          ]
+        }
+      },
+      "id": "ffab0914-408c-4842-b808-4ea2abc7f2a7",
+      "name": "Search files and folders External",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -48,
+        576
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "AmNEN3Tl7wRl2Xof",
+          "name": "Google Drive account 7"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "5b1ad1f7-845f-4739-90ed-308b2149f81e",
+      "name": "Download file External",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        176,
+        576
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "AmNEN3Tl7wRl2Xof",
+          "name": "Google Drive account 7"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "v1",
+          "mode": "list",
+          "cachedResultName": "v1"
+        },
+        "options": {
+          "pineconeNamespace": "production"
+        }
+      },
+      "id": "0bb2d35c-872c-44b9-8e21-846e72b43722",
+      "name": "Pinecone Vector Store External",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        576
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "CF3B1PmvFCGaq93H",
+          "name": "Pinecone account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "dimensions": 1024
+        }
+      },
+      "id": "dd83475e-2a05-4ac4-8ba1-4801de71f4f9",
+      "name": "Embeddings OpenAI External",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        800
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "9ejCBsDzNSQFlrfF",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "dimensions": 1024
+        }
+      },
+      "id": "76012c25-de4c-4e5b-8997-83e6ea6e3027",
+      "name": "Embeddings OpenAI Internal",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        784,
+        480
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "9ejCBsDzNSQFlrfF",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "months",
+              "triggerAtDayOfMonth": 28,
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "1f665ec6-4918-4672-ab6b-801f528c2ff7",
+      "name": "Schedule Trigger Ingestion",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "v1",
+          "mode": "list",
+          "cachedResultName": "v1"
+        },
+        "options": {
+          "pineconeNamespace": "production"
+        }
+      },
+      "id": "14982ce7-dc86-423e-8e59-bd23f2f13caf",
+      "name": "Pinecone Vector Store Internal",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        672,
+        272
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "CF3B1PmvFCGaq93H",
+          "name": "Pinecone account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store Internal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader Internal",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter1": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader External",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader External": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store External",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader Internal": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store Internal",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders External": {
+      "main": [
+        [
+          {
+            "node": "Download file External",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file External": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store External",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI External": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store External",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI Internal": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store Internal",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger Ingestion": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Search files and folders External",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "86582524-1a5f-4366-b092-8c7a2168726a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5f9c3e75447551353ecfdca551da21c2b27e6072d2f10f664b86eff9da2a65cc"
+  },
+  "nodeGroups": [],
+  "id": "NRi9F0qQGtrL7KSX",
+  "tags": []
+}
