@@ -59,7 +59,7 @@ Two separate n8n workflows...
 
 ## Read the full writeup
 
-The complete build story, including every bug and how it was diagnosed, is written up here: **[Medium article](#)** *(add your published link)*
+The complete build story, including every bug and how it was diagnosed, is written up here: **https://medium.com/@somnath13/novacart-finance-reporting-agent-17bdb0b748e3** *(add your published link)*
 
 ## Why this project
 
