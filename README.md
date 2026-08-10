@@ -37,7 +37,7 @@ Two separate n8n workflows, staggered to avoid race conditions:
 
 ## Repo structure
 Two separate n8n workflows...
-'''
+```
 ├── workflows/
 │ ├── Finance_RAG_Ingestion.json
 │ └── Finance_RAG_Agent.json
@@ -46,7 +46,7 @@ Two separate n8n workflows...
 │ └── article.md (full writeup, also published on Medium)
 └── screenshots/
 └── ... (working pipeline, sample email output)
-'''
+```
 
 > Workflow JSON files have credential IDs and personal folder/index identifiers removed. You'll need your own Google Drive, OpenAI, Pinecone, and Gmail credentials configured in n8n to run them.
 
