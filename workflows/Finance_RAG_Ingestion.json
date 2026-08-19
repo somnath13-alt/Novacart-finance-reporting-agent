@@ -25,10 +25,7 @@
       "name": "Search files and folders",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
-      "position": [
-        224,
-        272
-      ],
+      "position": [224, 272],
       "credentials": {
         "googleDriveOAuth2Api": {
           "id": "AmNEN3Tl7wRl2Xof",
@@ -50,10 +47,7 @@
       "name": "Download file",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
-      "position": [
-        448,
-        272
-      ],
+      "position": [448, 272],
       "credentials": {
         "googleDriveOAuth2Api": {
           "id": "AmNEN3Tl7wRl2Xof",
@@ -71,10 +65,7 @@
       "name": "Recursive Character Text Splitter",
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "typeVersion": 1,
-      "position": [
-        912,
-        688
-      ]
+      "position": [912, 688]
     },
     {
       "parameters": {
@@ -86,10 +77,7 @@
       "name": "Recursive Character Text Splitter1",
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "typeVersion": 1,
-      "position": [
-        896,
-        912
-      ]
+      "position": [896, 912]
     },
     {
       "parameters": {
@@ -101,6 +89,22 @@
               {
                 "name": "source",
                 "value": "external"
+              },
+              {
+                "name": "file_name",
+                "value": "={{ $json.originalFilename || $json.name }}"
+              },
+              {
+                "name": "drive_url",
+                "value": "={{ $json.webViewLink }}"
+              },
+              {
+                "name": "drive_file_id",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "name": "mime_type",
+                "value": "={{ $json.mimeType }}"
               }
             ]
           }
@@ -110,10 +114,7 @@
       "name": "Default Data Loader External",
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1.1,
-      "position": [
-        544,
-        800
-      ]
+      "position": [544, 800]
     },
     {
       "parameters": {
@@ -125,6 +126,22 @@
               {
                 "name": "source",
                 "value": "internal"
+              },
+              {
+                "name": "file_name",
+                "value": "={{ $json.originalFilename || $json.name }}"
+              },
+              {
+                "name": "drive_url",
+                "value": "={{ $json.webViewLink }}"
+              },
+              {
+                "name": "drive_file_id",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "name": "mime_type",
+                "value": "={{ $json.mimeType }}"
               }
             ]
           }
@@ -134,10 +151,7 @@
       "name": "Default Data Loader Internal",
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1.1,
-      "position": [
-        912,
-        480
-      ]
+      "position": [912, 480]
     },
     {
       "parameters": {
@@ -163,10 +177,7 @@
       "name": "Search files and folders External",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
-      "position": [
-        -48,
-        576
-      ],
+      "position": [-48, 576],
       "credentials": {
         "googleDriveOAuth2Api": {
           "id": "AmNEN3Tl7wRl2Xof",
@@ -188,10 +199,7 @@
       "name": "Download file External",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
-      "position": [
-        176,
-        576
-      ],
+      "position": [176, 576],
       "credentials": {
         "googleDriveOAuth2Api": {
           "id": "AmNEN3Tl7wRl2Xof",
@@ -216,10 +224,7 @@
       "name": "Pinecone Vector Store External",
       "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
       "typeVersion": 1.3,
-      "position": [
-        400,
-        576
-      ],
+      "position": [400, 576],
       "credentials": {
         "pineconeApi": {
           "id": "CF3B1PmvFCGaq93H",
@@ -237,10 +242,7 @@
       "name": "Embeddings OpenAI External",
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
-      "position": [
-        416,
-        800
-      ],
+      "position": [416, 800],
       "credentials": {
         "openAiApi": {
           "id": "9ejCBsDzNSQFlrfF",
@@ -258,10 +260,7 @@
       "name": "Embeddings OpenAI Internal",
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
-      "position": [
-        784,
-        480
-      ],
+      "position": [784, 480],
       "credentials": {
         "openAiApi": {
           "id": "9ejCBsDzNSQFlrfF",
@@ -285,10 +284,7 @@
       "name": "Schedule Trigger Ingestion",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.3,
-      "position": [
-        0,
-        272
-      ]
+      "position": [0, 272]
     },
     {
       "parameters": {
@@ -307,16 +303,26 @@
       "name": "Pinecone Vector Store Internal",
       "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
       "typeVersion": 1.3,
-      "position": [
-        672,
-        272
-      ],
+      "position": [672, 272],
       "credentials": {
         "pineconeApi": {
           "id": "CF3B1PmvFCGaq93H",
           "name": "Pinecone account"
         }
       }
+    },
+    {
+      "parameters": {
+        "content": "## Finance_RAG_Ingestion (v2)\n\nRuns monthly on day 28, 8am.\n\n**v2 change vs original:** each chunk now also carries file_name, drive_url, drive_file_id, and mime_type metadata (alongside the existing source tag) so the Agent workflow can cite specific source documents in the final report instead of just internal/external in general.\n\nNo credential or folder changes needed — this is a drop-in replacement for the v1 workflow already running in production.",
+        "height": 220,
+        "width": 420,
+        "color": 5
+      },
+      "id": "sticky-ingestion-v2-01",
+      "name": "v2 Changelog",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [0, -80],
+      "typeVersion": 1
     }
   ],
   "pinData": {},
@@ -454,7 +460,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "86582524-1a5f-4366-b092-8c7a2168726a",
+  "versionId": "novacart-ingestion-v2-final",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "5f9c3e75447551353ecfdca551da21c2b27e6072d2f10f664b86eff9da2a65cc"
