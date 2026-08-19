@@ -3,18 +3,43 @@
   "nodes": [
     {
       "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "months",
+              "triggerAtDayOfMonth": 1,
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [0, 0],
+      "id": "c256a128-17b3-46b3-a5dc-d050532cf60e",
+      "name": "Schedule Trigger Agent"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Compute the previous calendar month as the reporting period\nconst now = new Date();\nconst firstOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);\nconst lastOfPrevMonth = new Date(firstOfThisMonth.getTime() - 1);\n\nconst reportYear = lastOfPrevMonth.getFullYear();\nconst reportMonthIndex = lastOfPrevMonth.getMonth();\nconst reportMonth = reportMonthIndex + 1;\n\nconst monthNames = ['January','February','March','April','May','June',\n  'July','August','September','October','November','December'];\nconst reportMonthName = monthNames[reportMonthIndex];\n\nconst periodStart = new Date(reportYear, reportMonthIndex, 1);\nconst periodEnd = new Date(reportYear, reportMonthIndex + 1, 0);\nconst fmt = (d) => d.toISOString().slice(0, 10);\n\nreturn [{\n  json: {\n    report_year: reportYear,\n    report_month: reportMonth,\n    report_month_name: reportMonthName,\n    period_start: fmt(periodStart),\n    period_end: fmt(periodEnd)\n  }\n}];"
+      },
+      "id": "code-reporting-period-01",
+      "name": "Set Reporting Period",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [208, 0]
+    },
+    {
+      "parameters": {
         "promptType": "define",
-        "text": "Generate this month's NovaCart Monthly Financial Standing Report. Use the novacart_knowledge_base tool to retrieve internal product sales/revenue data and external industry outlook data, then produce a structured report with these sections: Executive Summary, Internal Performance Highlights, External Market Context, Correlated Insights, and Recommendations.",
+        "text": "=Generate the NovaCart Monthly Financial Standing Report for {{ $json.report_month_name }} {{ $json.report_year }} (period {{ $json.period_start }} to {{ $json.period_end }}). Use the novacart_knowledge_base tool to retrieve internal product sales/revenue data and external industry outlook data, then produce a structured report with these sections: Executive Summary, Internal Performance Highlights, External Market Context, Correlated Insights, and Recommendations.",
         "options": {
-          "systemMessage": "You are NovaCart's Finance Reporting Agent. When generating the Monthly Financial Standing Report, format your entire response as clean, valid HTML — not Markdown. \n\nUse these tags:\n- <h2> for the report title\n- <h3> for section headings (Executive Summary, Internal Performance Highlights, External Market Context, Correlated Insights, Recommendations)\n- <p> for paragraphs\n- <ul>/<li> for bullet points\n- <strong> for emphasis instead of asterisks\n\nDo not use Markdown syntax like ##, **, or \\n — output real HTML tags only, since this will be sent directly as an HTML email."
+          "systemMessage": "You are NovaCart's Finance Reporting Agent. When generating the Monthly Financial Standing Report, format your entire response as clean, valid HTML — not Markdown. \n\nUse these tags:\n- <h2> for the report title\n- <h3> for section headings (Executive Summary, Internal Performance Highlights, External Market Context, Correlated Insights, Recommendations)\n- <p> for paragraphs\n- <ul>/<li> for bullet points\n- <strong> for emphasis instead of asterisks\n\nDo not use Markdown syntax like ##, **, or \\n — output real HTML tags only, since this will be sent directly as an HTML email.\n\nSearch NovaCart's internal product sales/revenue data and external industry outlook reports using the novacart_knowledge_base tool. Use metadata field \"source\" (values: \"internal\" or \"external\") to distinguish between the two. Call this multiple times with different queries to gather both internal performance and external market context before writing the report.\n\nWhen citing internal or external data, include the source in parentheses using the file_name and drive_url metadata attached to retrieved chunks, e.g. (Source: mckinsey-technology-trends-outlook-2025.pdf https://drive.google.com/...). Add a final \"Sources\" section at the end of the report listing all documents referenced.\n\nIf a key figure is unavailable in retrieved data, state that explicitly rather than inventing a number."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
-      "position": [
-        208,
-        0
-      ],
+      "position": [416, 0],
       "id": "7bb8b88e-6e03-406a-a17d-85a82c9284b3",
       "name": "AI Agent"
     },
@@ -31,10 +56,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
-      "position": [
-        80,
-        208
-      ],
+      "position": [288, 208],
       "id": "b2bebfd0-abc0-43fa-8e4f-71a2866af12e",
       "name": "OpenAI Chat Model",
       "credentials": {
@@ -47,7 +69,7 @@
     {
       "parameters": {
         "mode": "retrieve-as-tool",
-        "toolDescription": "Search NovaCart's internal product sales/revenue data and external industry outlook reports. Use metadata field \"source\" (values: \"internal\" or \"external\") to distinguish between the two. Call this multiple times with different queries to gather both internal performance and external market context before writing the report.",
+        "toolDescription": "Search NovaCart's internal product sales/revenue data and external industry outlook reports. Use metadata field \"source\" (values: \"internal\" or \"external\") to distinguish between the two. Call this multiple times with different queries to gather both internal performance and external market context before writing the report. Each result includes file_name and drive_url metadata for citation.",
         "pineconeIndex": {
           "__rl": true,
           "value": "v1",
@@ -56,15 +78,13 @@
         },
         "topK": 20,
         "options": {
-          "pineconeNamespace": "production"
+          "pineconeNamespace": "production",
+          "includeMetadata": true
         }
       },
       "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
       "typeVersion": 1.3,
-      "position": [
-        432,
-        208
-      ],
+      "position": [640, 208],
       "id": "90ec9f6a-c75c-4454-b2c6-182d6bd1525d",
       "name": "Pinecone Vector Store",
       "credentials": {
@@ -82,10 +102,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
-      "position": [
-        272,
-        288
-      ],
+      "position": [480, 288],
       "id": "d7fb1e11-67a9-4626-acbd-e177e55740e6",
       "name": "Embeddings OpenAI",
       "credentials": {
@@ -97,17 +114,24 @@
     },
     {
       "parameters": {
+        "jsCode": "// Defensive parsing of the AI Agent output before emailing\nconst meta = $('Set Reporting Period').first().json;\nconst agentOut = $input.first().json;\n\nlet html = agentOut.output ?? agentOut.text ?? agentOut.response ?? agentOut.answer ?? agentOut.result ?? agentOut;\n\nif (typeof html !== 'string') {\n  html = JSON.stringify(html, null, 2);\n}\n\n// Strip accidental Markdown code fences if the model wrapped HTML\nhtml = html.replace(/^```(?:html)?\\s*/i, '').replace(/\\s*```$/i, '');\n\n// If it doesn't look like HTML, wrap in <pre> so the email still renders legibly\nif (!/<[a-z][\\s\\S]*>/i.test(html)) {\n  const escape = (s) => s\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;');\n  html = `<pre style=\"white-space: pre-wrap; font-family: ui-monospace, Menlo, Consolas, monospace;\">${escape(html)}</pre>`;\n}\n\nconst subject = `NovaCart Monthly Financial Standing Report — ${meta.report_month_name} ${meta.report_year}`;\n\nreturn [{\n  json: {\n    report_subject: subject,\n    report_html: html\n  }\n}];"
+      },
+      "id": "code-prepare-email-01",
+      "name": "Prepare Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [624, 0]
+    },
+    {
+      "parameters": {
         "sendTo": "sukanya.1984@gmail.com",
-        "subject": "=NovaCart Monthly Financial Standing Report — {{ $now.format('MMMM yyyy') }}",
-        "message": "={{ $json.output }}",
+        "subject": "={{ $json.report_subject }}",
+        "message": "={{ $json.report_html }}",
         "options": {}
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
-      "position": [
-        560,
-        32
-      ],
+      "position": [832, 0],
       "id": "9ab2de16-267e-4a99-ace6-5c1c5260e4b4",
       "name": "Send a message",
       "webhookId": "fd7c5bb5-adbe-42f6-a3b4-866d70ef8d1c",
@@ -120,27 +144,42 @@
     },
     {
       "parameters": {
-        "rule": {
-          "interval": [
-            {
-              "field": "months",
-              "triggerAtHour": 8
-            }
-          ]
-        }
+        "content": "## Finance_RAG_Agent (v2)\n\nRuns monthly on day 1, 8am — after Finance_RAG_Ingestion has refreshed on day 28.\n\n**v2 changes vs original:**\n1. Added \"Set Reporting Period\" — computes the exact previous calendar month instead of a vague \"this month\" prompt, so the report always covers the correct period regardless of exactly when the trigger fires.\n2. Added \"Prepare Email\" — defensively parses whichever field the Agent output lands in, strips stray Markdown fences, and falls back to <pre> wrapping if output isn't valid HTML. Protects against silent breakage if the Agent node's output field name ever changes.\n3. System prompt now requires citing file_name + drive_url per claim, plus a final Sources section (relies on the matching v2 Ingestion workflow's new metadata fields).\n\nSame credentials, index, and recipient as the original — this is a drop-in replacement.",
+        "height": 300,
+        "width": 480,
+        "color": 4
       },
-      "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.3,
-      "position": [
-        0,
-        0
-      ],
-      "id": "c256a128-17b3-46b3-a5dc-d050532cf60e",
-      "name": "Schedule Trigger Agent"
+      "id": "sticky-agent-v2-01",
+      "name": "v2 Changelog",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [0, -260],
+      "typeVersion": 1
     }
   ],
   "pinData": {},
   "connections": {
+    "Schedule Trigger Agent": {
+      "main": [
+        [
+          {
+            "node": "Set Reporting Period",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Reporting Period": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "OpenAI Chat Model": {
       "ai_languageModel": [
         [
@@ -178,18 +217,18 @@
       "main": [
         [
           {
-            "node": "Send a message",
+            "node": "Prepare Email",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Schedule Trigger Agent": {
+    "Prepare Email": {
       "main": [
         [
           {
-            "node": "AI Agent",
+            "node": "Send a message",
             "type": "main",
             "index": 0
           }
@@ -203,7 +242,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "34552c64-65ec-4242-b7f6-3f2abdf2ca5f",
+  "versionId": "novacart-agent-v2-final",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "5f9c3e75447551353ecfdca551da21c2b27e6072d2f10f664b86eff9da2a65cc"
